@@ -1,13 +1,24 @@
 import {mainComponent} from './game/index';
 
-let element = mainComponent();
-document.body.appendChild(element);
+const generateContent = () => {
+  const element = mainComponent();
+
+  const rootDiv = document.createElement('div');
+  rootDiv.id = 'mainGameWrapper';
+  rootDiv.className = 'flex-container';
+  rootDiv.appendChild(element);
+
+  return rootDiv;
+};
+
+let content = generateContent();
+document.body.appendChild(content);
 
 if (module.hot) {
-    module.hot.accept('./index.js', function() {
-        console.log('Hot reload!');
-        document.body.removeChild(element);
-        element = mainComponent();
-        document.body.appendChild(element);
-    });
+  module.hot.accept('./index.js', () => {
+    document.body.removeChild(content);
+
+    content = generateContent();
+    document.body.appendChild(content);
+  });
 }

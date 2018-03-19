@@ -1,36 +1,31 @@
 import * as PIXI from 'pixi.js';
-import queen from './../../public/images/queen.png';
+// import queen from './../../public/images/queen.png';
+import mainGameComponent from './elements/mainGameComponent';
+import prepareCanvas from './elements/prepareCanvas';
+import {createBoardN} from './elements/chessBoard';
 
 const mainComponent = () => {
-    //Create a Pixi Application
-    let app = new PIXI.Application({ 
-        width: 500, 
-        height: 500,                       
-        antialias: true, 
-        transparent: false, 
-        resolution: 1
-    });
+  const app = mainGameComponent();
 
-    console.log(123)
-    //load an image and run the `setup` function when it's done
-    PIXI.loader
-        .add(queen)
-        .load(setup);
+  // load an image and run the `setup` function when it's done
+  // PIXI.loader
+  //     .add(queen)
+  //     .load(setup);
 
-    //This `setup` function will run when the image has loaded
-    function setup() {
-        //Create the cat sprite
-        let cat = new PIXI.Sprite(PIXI.loader.resources[queen].texture);
-        cat.scale.x = 0.05;
-        cat.scale.y = 0.05;
+  // //This `setup` function will run when the image has loaded
+  // function setup() {
+  //     //Create the cat sprite
+  //     let cat = new PIXI.Sprite(PIXI.loader.resources[queen].texture);
+  //     cat.scale.x = 0.05;
+  //     cat.scale.y = 0.05;
 
-        //Add the cat to the stage
-        app.stage.addChild(cat);
-    }
+  //     //Add the cat to the stage
+  //     app.stage.addChild(cat);
+  // }
 
-    return app.view;
-}
+  createBoardN(app);
 
-export {
-    mainComponent
-}
+  return prepareCanvas(app);
+};
+
+export {mainComponent};

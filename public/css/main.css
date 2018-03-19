@@ -1,0 +1,25 @@
+html, 
+body {
+    margin: 0;
+    padding: 0;
+}
+#mainGameWrapper {
+    height: 100vh;
+}
+#mainGameWrapper canvas {
+    border: 1px solid #A56F18;
+}
+.flex-container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: center;
+    align-content: stretch;
+    align-items: center;
+}
+
+.flex-item:nth-child(1) {
+    order: 0;
+    flex: 0 1 auto;
+    align-self: center;
+}
