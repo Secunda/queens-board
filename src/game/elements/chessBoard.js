@@ -128,9 +128,23 @@ class Board {
 
           queenSprite.interactive = true;
           queenSprite.on('pointerdown', (event) => {
-            console.log(event.target, queenSprite.x, queenSprite.y);
-
-            this.listQueensSprites[rowIndex][columnIndex - 1].x += 1.5;
+            this.listQueensSprites.forEach((rowQueens, rowQueensIndex) => {
+              rowQueens.forEach((colQueens, colQueensIndex) => {
+                if (
+                  (
+                    rowQueensIndex === rowIndex
+                    || colQueensIndex === columnIndex
+                    || (rowIndex - columnIndex) === (rowQueensIndex - colQueensIndex)
+                    || (rowIndex + columnIndex) === (rowQueensIndex + colQueensIndex)
+                  )
+                  && !(rowQueensIndex === rowIndex && colQueensIndex === columnIndex)
+                ) {
+                  this.listQueensSprites[rowQueensIndex][colQueensIndex].visible =
+                    !this.listQueensSprites[rowQueensIndex][colQueensIndex].visible;
+                }
+              });
+            });
+            console.log(event.target, queenSprite.x, queenSprite.y, this.listQueensSprites[rowIndex][columnIndex - 1].visible);
           });
         }
       });
