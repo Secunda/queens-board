@@ -4,13 +4,13 @@ import mainGameComponent from './elements/mainGameComponent';
 import prepareCanvas from './elements/prepareCanvas';
 import {BoardInstance} from './elements/chessBoard';
 
-const mainComponent = () => {
+const mainComponent = async () => {
   const app = mainGameComponent();
   const board = new BoardInstance(app);
 
   board.createBoardN();
 
-  PIXI.loader
+  await PIXI.loader
     .add(queen)
     .load(() => {
       board.fillBoardByQueens(queen);

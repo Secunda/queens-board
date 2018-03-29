@@ -1,7 +1,10 @@
+import {createStore} from 'redux';
 import {mainComponent} from './game/index';
 
-const generateContent = () => {
-  const element = mainComponent();
+import gameReducer from './reducers/game';
+
+const generateContent = async () => {
+  const element = await mainComponent();
 
   const rootDiv = document.createElement('div');
   rootDiv.id = 'mainGameWrapper';
@@ -11,14 +14,16 @@ const generateContent = () => {
   return rootDiv;
 };
 
-let content = generateContent();
-document.body.appendChild(content);
+(async () => {
+  let content = await generateContent();
+  document.body.appendChild(content);
 
-if (module.hot) {
-  module.hot.accept('./index.js', () => {
-    document.body.removeChild(content);
+  if (module.hot) {
+    module.hot.accept('./index.js', async () => {
+      document.body.removeChild(content);
 
-    content = generateContent();
-    document.body.appendChild(content);
-  });
-}
+      content = await generateContent();
+      document.body.appendChild(content);
+    });
+  }
+})();

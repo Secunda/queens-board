@@ -127,26 +127,29 @@ class Board {
           this.application.stage.addChild(queenSprite);
 
           queenSprite.interactive = true;
-          queenSprite.on('pointerdown', (event) => {
-            this.listQueensSprites.forEach((rowQueens, rowQueensIndex) => {
-              rowQueens.forEach((colQueens, colQueensIndex) => {
-                if (
-                  (
-                    rowQueensIndex === rowIndex
-                    || colQueensIndex === columnIndex
-                    || (rowIndex - columnIndex) === (rowQueensIndex - colQueensIndex)
-                    || (rowIndex + columnIndex) === (rowQueensIndex + colQueensIndex)
-                  )
-                  && !(rowQueensIndex === rowIndex && colQueensIndex === columnIndex)
-                ) {
-                  this.listQueensSprites[rowQueensIndex][colQueensIndex].visible =
-                    !this.listQueensSprites[rowQueensIndex][colQueensIndex].visible;
-                }
-              });
-            });
-            console.log(event.target, queenSprite.x, queenSprite.y, this.listQueensSprites[rowIndex][columnIndex - 1].visible);
-          });
+          this.queenActivate(queenSprite, rowIndex, columnIndex);
         }
+      });
+    });
+  }
+
+  queenActivate(queenSprite, rowIndex, columnIndex) {
+    queenSprite.on('pointerdown', () => {
+      this.listQueensSprites.forEach((rowQueens, rowQueensIndex) => {
+        rowQueens.forEach((colQueens, colQueensIndex) => {
+          if (
+            (
+              rowQueensIndex === rowIndex
+              || colQueensIndex === columnIndex
+              || (rowIndex - columnIndex) === (rowQueensIndex - colQueensIndex)
+              || (rowIndex + columnIndex) === (rowQueensIndex + colQueensIndex)
+            )
+            && !(rowQueensIndex === rowIndex && colQueensIndex === columnIndex)
+          ) {
+            this.listQueensSprites[rowQueensIndex][colQueensIndex].visible =
+              !this.listQueensSprites[rowQueensIndex][colQueensIndex].visible;
+          }
+        });
       });
     });
   }
