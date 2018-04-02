@@ -6,6 +6,12 @@ class Board {
       color: {
         light: 0xE3BD80,
         dark: 0xA56F18,
+
+        active: {
+          light: 0x69629E,
+          dark: 0x69629E,
+          // dark: 0x106B54,
+        },
       },
       boardSize: 8,
     };
@@ -14,9 +20,13 @@ class Board {
 
     this.boardSprites = [];
     this.listQueensSprites = [];
+    this.cellBoardStatus = [];
   }
 
   createBoardN(n = this.options.boardSize) {
+    // Create empty array with cell statuses
+    this.cellBoardStatus = Array.from({length: n}, () => Array.from({length: n}));
+
     const canvasWidth = this.application.view.width;
     const cellSize = Math.round(canvasWidth / n);
 
@@ -47,7 +57,7 @@ class Board {
     });
   }
 
-  queensPossibleMatrix(numbers = this.options.boardSize) {
+  queensPossibleMatrixs(numbers = this.options.boardSize) {
     const result = [];
 
     const findMatrix = (queens, xyDif, xySum) => {
@@ -85,7 +95,7 @@ class Board {
   }
 
   generateQueensMatrix() {
-    const matrix = this.queensPossibleMatrix();
+    const matrix = this.queensPossibleMatrixs();
 
     return matrix[Math.floor(Math.random() * matrix.length)];
   }
@@ -101,57 +111,119 @@ class Board {
 
       [...new Array(n)].forEach((v2, columnIndex) => {
         if (matrix[rowIndex][columnIndex] === 0) {
-          const circle = new PIXI.Graphics();
-          circle.beginFill(0xFF0000);
-          circle.drawCircle(0, 0, radius);
-          circle.endFill();
-
-          circle.x = (columnIndex * cellSize) + (cellSize / 2);
-          circle.y = (rowIndex * cellSize) + (cellSize / 2);
-          circle.visible = false;
-
-          this.listQueensSprites[rowIndex][columnIndex] = circle;
-
-          this.application.stage.addChild(circle);
+          this.emptyCell(rowIndex, columnIndex, radius, cellSize);
         } else {
-          const queenSprite = new PIXI.Sprite(PIXI.loader.resources[queen].texture);
-
-          queenSprite.x = (columnIndex * cellSize) + (cellSize / 4);
-          queenSprite.y = (rowIndex * cellSize) + (cellSize / 4);
-
-          queenSprite.width = cellSize / 2;
-          queenSprite.height = cellSize / 2;
-
-          this.listQueensSprites[rowIndex][columnIndex] = queenSprite;
-
-          this.application.stage.addChild(queenSprite);
-
-          queenSprite.interactive = true;
-          this.queenActivate(queenSprite, rowIndex, columnIndex);
+          this.queenCell(queen, rowIndex, columnIndex, cellSize);
         }
       });
     });
   }
 
+  emptyCell(rowIndex, columnIndex, radius, cellSize) {
+    const circle = new PIXI.Graphics();
+    circle.beginFill(0xFF0000);
+    circle.drawCircle(0, 0, radius);
+    circle.endFill();
+
+    circle.x = (columnIndex * cellSize) + (cellSize / 2);
+    circle.y = (rowIndex * cellSize) + (cellSize / 2);
+    circle.visible = false;
+
+    this.listQueensSprites[rowIndex][columnIndex] = circle;
+
+    this.application.stage.addChild(circle);
+  }
+
+  queenCell(queen, rowIndex, columnIndex, cellSize) {
+    const queenSprite = new PIXI.Sprite(PIXI.loader.resources[queen].texture);
+
+    queenSprite.x = (columnIndex * cellSize) + (cellSize / 4);
+    queenSprite.y = (rowIndex * cellSize) + (cellSize / 4);
+
+    queenSprite.width = cellSize / 2;
+    queenSprite.height = cellSize / 2;
+
+    this.listQueensSprites[rowIndex][columnIndex] = queenSprite;
+
+    this.application.stage.addChild(queenSprite);
+
+    queenSprite.interactive = true;
+    this.queenActivate(queenSprite, rowIndex, columnIndex);
+  }
+
   queenActivate(queenSprite, rowIndex, columnIndex) {
     queenSprite.on('pointerdown', () => {
-      this.listQueensSprites.forEach((rowQueens, rowQueensIndex) => {
-        rowQueens.forEach((colQueens, colQueensIndex) => {
-          if (
-            (
-              rowQueensIndex === rowIndex
-              || colQueensIndex === columnIndex
-              || (rowIndex - columnIndex) === (rowQueensIndex - colQueensIndex)
-              || (rowIndex + columnIndex) === (rowQueensIndex + colQueensIndex)
-            )
-            && !(rowQueensIndex === rowIndex && colQueensIndex === columnIndex)
-          ) {
-            this.listQueensSprites[rowQueensIndex][colQueensIndex].visible =
-              !this.listQueensSprites[rowQueensIndex][colQueensIndex].visible;
-          }
-        });
+      if (this.cellBoardStatus[rowIndex][columnIndex] === 2) {
+        this.cellBoardStatus[rowIndex][columnIndex] = undefined;
+
+        this.hideOccupiedCells();
+      } else {
+        this.hideOccupiedCells();
+
+        this.cellBoardStatus[rowIndex][columnIndex] = 2;
+
+        this.showOccupiedCells(rowIndex, columnIndex);
+      }
+
+      this.animateQueen(rowIndex, columnIndex);
+    });
+  }
+
+  showOccupiedCells(rowIndex, columnIndex) {
+    this.listQueensSprites.forEach((rowQueens, rowQueensIndex) => {
+      rowQueens.forEach((colQueens, colQueensIndex) => {
+        if (
+          (
+            rowQueensIndex === rowIndex
+            || colQueensIndex === columnIndex
+            || (rowIndex - columnIndex) === (rowQueensIndex - colQueensIndex)
+            || (rowIndex + columnIndex) === (rowQueensIndex + colQueensIndex)
+          )
+          && !(rowQueensIndex === rowIndex && colQueensIndex === columnIndex)
+        ) {
+          // Show red dot
+          this.listQueensSprites[rowQueensIndex][colQueensIndex].visible = true;
+
+          // Set cell status
+          this.cellBoardStatus[rowQueensIndex][colQueensIndex] = 1;
+        }
       });
     });
+  }
+
+  hideOccupiedCells() {
+    this.cellBoardStatus.forEach((row, rowIndex) => {
+      row.forEach((visible, colIndex) => {
+        if (visible) {
+          this.cellBoardStatus[rowIndex][colIndex] = undefined;
+        }
+
+        if (visible === 1) {
+          this.listQueensSprites[rowIndex][colIndex].visible = false;
+        }
+
+        if (visible === 2) {
+          this.animateQueen(rowIndex, colIndex);
+        }
+      });
+    });
+  }
+
+  animateQueen(rowIndex, columnIndex) {
+    const cellColor = !((rowIndex + columnIndex) % 2);
+
+    let currentColor = cellColor ? this.options.color.light : this.options.color.dark;
+    if (this.cellBoardStatus[rowIndex][columnIndex] === 2) {
+      currentColor = cellColor ? this.options.color.active.light : this.options.color.active.dark;
+    }
+
+    const sprite = this.boardSprites[rowIndex][columnIndex];
+    const originSprite = sprite.clone();
+
+    sprite.clear();
+    sprite.beginFill(currentColor);
+    sprite.drawRect(0, 0, originSprite.width, originSprite.height);
+    sprite.endFill();
   }
 }
 

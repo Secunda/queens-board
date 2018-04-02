@@ -1,7 +1,4 @@
-import {createStore} from 'redux';
 import {mainComponent} from './game/index';
-
-import gameReducer from './reducers/game';
 
 const generateContent = async () => {
   const element = await mainComponent();
