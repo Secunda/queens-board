@@ -17,7 +17,7 @@ class Scenes {
 
     const menuScene = new PIXI.Container();
     menuScene.alpha = 0.2;
-    menuScene.visible = true;
+    menuScene.visible = false;
     this.application.stage.addChild(this.initMenuScene(menuScene));
 
     const gameScene = new PIXI.Container();
