@@ -1,7 +1,7 @@
 import * as PIXI from 'pixi.js';
 
 class Board {
-  constructor(application) {
+  constructor(application, gameScene) {
     this.options = {
       color: {
         light: 0xE3BD80,
@@ -17,6 +17,7 @@ class Board {
     };
 
     this.application = application;
+    this.gameScene = gameScene;
 
     this.boardSprites = [];
     this.listQueensSprites = [];
@@ -52,7 +53,7 @@ class Board {
 
         this.boardSprites[rowIndex][columnIndex] = rectangle;
 
-        this.application.stage.addChild(rectangle);
+        this.gameScene.addChild(rectangle);
       });
     });
   }
@@ -131,7 +132,7 @@ class Board {
 
     this.listQueensSprites[rowIndex][columnIndex] = circle;
 
-    this.application.stage.addChild(circle);
+    this.gameScene.addChild(circle);
   }
 
   queenCell(queen, rowIndex, columnIndex, cellSize) {
@@ -145,7 +146,7 @@ class Board {
 
     this.listQueensSprites[rowIndex][columnIndex] = queenSprite;
 
-    this.application.stage.addChild(queenSprite);
+    this.gameScene.addChild(queenSprite);
 
     queenSprite.interactive = true;
     this.queenActivate(queenSprite, rowIndex, columnIndex);
